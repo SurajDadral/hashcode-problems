@@ -1,5 +1,4 @@
 from math import ceil
-import bisect
 
 
 class Pizza:
@@ -36,11 +35,18 @@ class Pizza:
     def optimize(self):
         included_elements_sum = sum(self.included_elements)
         diff = self.max_slices - included_elements_sum
-        sol_element = max(filter((diff).__ge__, self.exc_elements))
-        sol_element_index = self.exc_elements.index(sol_element)
-        self.exc_elements.pop(sol_element_index)
-        self.solution_list[len(self.included_elements) + sol_element_index] = 1
-        self.included_elements.append(sol_element)
+        exc_elements = self.exc_elements
+        while diff > 0 and len(exc_elements) > 0:
+            exc_elements = list(filter((diff).__ge__, exc_elements))
+            if len(exc_elements) > 0:
+                sol_element = exc_elements[0]
+                sol_element_index = self.exc_elements.index(sol_element)
+                self.exc_elements.pop(sol_element_index)
+                self.solution_list[
+                    len(self.included_elements) + sol_element_index
+                ] = 1
+                self.included_elements.append(sol_element)
+                diff -= sol_element
 
     def findPizzaCombination(self):
         sol_element_count = self.getTmpSol(
@@ -51,8 +57,8 @@ class Pizza:
         max_slices = sum(self.included_elements)
         diff = self.max_slices - max_slices
 
-        print("Included:", len(self.included_elements))
-        print("Excluded:", len(self.exc_elements))
+        print("Included:", self.included_elements)
+        print("Excluded:", self.exc_elements)
         print("Sum:", sum(self.included_elements))
         print("Sum Excluded:", sum(self.exc_elements))
         print("Diff:", diff)
@@ -60,11 +66,14 @@ class Pizza:
 
 
 if __name__ == "__main__":
-    # with open("a_example.in", "r") as inp_file:
-    # with open("b_small.in", "r") as inp_file:
-    # with open("c_medium.in", "r") as inp_file:
-    # with open("d_quite_big.in", "r") as inp_file:
-    with open("e_also_big.in", "r") as inp_file:
+    input_files = [
+        "a_example.in",
+        "b_small.in",
+        "c_medium.in",
+        "d_quite_big.in",
+        "e_also_big.in",
+    ]
+    with open(input_files[1], "r") as inp_file:
         lines = inp_file.readlines()
 
     max_slices = int(lines[0].strip().split(" ")[0])
